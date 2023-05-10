@@ -102,7 +102,7 @@ def arrival():
         arrival_ref = db.reference('arrival')
         #Looping through each row in the csv file and inserting the data in the database
         for row in reader:
-            # Using the departure value as the key for the child node
+            # Using the arrival value as the key for the child node
             arrival_value = row['arrival']
             #Creating a reference to the child node
             new_arrival_ref = arrival_ref.child(arrival_value)
