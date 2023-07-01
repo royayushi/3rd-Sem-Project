@@ -170,7 +170,9 @@ def createArea1():
 
     data = points_covered
     cleaned_data = [value.replace('\n', '').replace('via:', '').replace('via', '').strip() for value in data]
-    cleaned_data.remove("8B","Sishu Mangal")
+    values_to_remove = ["8B","Sishu Mangal"]
+    for value in values_to_remove:
+        cleaned_data.remove(value)
 
     # Filtering out the unique values from points_covered
     unique_points_covered = list(set(cleaned_data))
