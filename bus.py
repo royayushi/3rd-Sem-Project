@@ -145,6 +145,37 @@ def creating_routes():
     routes_ref.set(routes_dict)
     return "Routes added successfully!"
 
+@app.route('/creating_areas')
+def createArea1():
+    # Creating a reference to the 'buses' node in the database
+    buses_ref = db.reference('buses')
+
+    # Retrieve the data from the 'buses' node
+    buses_data = buses_ref.get()
+
+    #Filtering out the null values
+    buses_data = [bus for bus in buses_data if bus is not None]
+    
+    #Storing the buses_data in a dictionary
+    buses_dict = {bus['bus_id']: bus for bus in buses_data}
+
+    # Creating an empty list to store the points covered
+    points_covered = []
+
+    # Looping through each bus and extracting the route values
+    for bus_id, bus_data in buses_dict.items():
+        route = bus_data['route']
+        locations = route.split(',')
+        points_covered.extend(locations)
+
+    data = points_covered
+    cleaned_data = [value.replace('\n', '').replace('via:', '').replace('via', '').strip() for value in data]
+    cleaned_data.remove("8B","Sishu Mangal")
+
+    # Filtering out the unique values from points_covered
+    unique_points_covered = list(set(cleaned_data))
+
+    return unique_points_covered
 
 @app.route('/getArrivalData')
 def getArrivalData():
