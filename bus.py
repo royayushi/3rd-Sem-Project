@@ -111,10 +111,12 @@ def arrival():
             new_arrival_ref.set(True)
 
         return 'Arrivals added successfully!'
+#Creating an empty list to store the route values
+eachRoute = []
 
 @app.route('/creating_routes')
 def creating_routes():
-
+    global eachRoute
    #Creating a reference to the database
     buses_ref = db.reference('buses')
     routes_ref = db.reference('routes')
@@ -136,10 +138,13 @@ def creating_routes():
         origin = bus_data['origin']
         destination = bus_data['destination']
         route_key = f"{origin}-{destination}"
+        eachRoute.append(route_key)
         if route_key in routes_dict:
             routes_dict[route_key].append(bus_id)
         else:
             routes_dict[route_key] = [bus_id]
+
+    # uniqueRoutes = list(set(eachRoute))
 
     # Writing the routes to the routes node
     routes_ref.set(routes_dict)
@@ -198,29 +203,12 @@ def getBusData():
 @app.route("/")
 @app.route("/home")
 def home_page():
-   #Creating a reference to the database
-    buses_ref = db.reference('buses')
-    # Retrieve the data from the buses node
-    buses_data = buses_ref.get()
-    #Filtering out the null values
-    buses_data = [bus for bus in buses_data if bus is not None]
-    
-    #Storing the buses_data in a dictionary
-    buses_dict = {bus['bus_id']: bus for bus in buses_data}
-
-    #Creating an empty list to store the route values
-    eachRoute = []
-
-    # Looping through each bus and adding it to the appropriate route
-    for bus_id, bus_data in buses_dict.items():
-        origin = bus_data['origin']
-        destination = bus_data['destination']
-        route_key = f"{origin}-{destination}"
-        eachRoute.append(route_key)
+    global eachRoute
     '''
     I was thinking of adding the eachRoute.append(route_key) line to the creating_routes function, after the f"{}" line and before the for loop. We will make eachRoute there a global variable and thus will be able to use it in this function also. We'll add the uniqueRoutes variable there only and make that also a global variable. That way we won't have code redundancy.
     '''
     uniqueRoutes = list(set(eachRoute))
+    # print(uniqueRoutes)
     return render_template('home.html', eachRoute = uniqueRoutes)
 
 # Route for the search page
