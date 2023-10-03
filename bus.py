@@ -217,14 +217,16 @@ def home_page():
         destination = bus_data['destination']
         route_key = f"{origin}-{destination}"
         eachRoute.append(route_key)
-    
+    '''
+    I was thinking of adding the eachRoute.append(route_key) line to the creating_routes function, after the f"{}" line and before the for loop. We will make eachRoute there a global variable and thus will be able to use it in this function also. We'll add the uniqueRoutes variable there only and make that also a global variable. That way we won't have code redundancy.
+    '''
     uniqueRoutes = list(set(eachRoute))
     return render_template('home.html', eachRoute = uniqueRoutes)
 
 # Route for the search page
 @app.route('/search', methods=['POST'])
 def search():
-    # Retrieving the origin and destination values from the form data
+    # Retrieving the origin and destination(route) values from the form data
     selectedRoute = request.form['routes']
 
     # Generating the URL for the search results page
