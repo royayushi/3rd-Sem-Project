@@ -1,0 +1,34 @@
+{
+  "rules": {
+    "buses": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$bus_id": {
+        ".read": "auth != null && auth.uid == 'my-service-worker'",
+        ".write": "auth != null"
+      }
+    },
+    "departure": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$departure": {
+        ".validate": "newData.isBoolean()",
+        ".read": "auth != null"
+      }
+    },
+    "arrival": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$arrival": {
+        ".validate": "newData.isBoolean()",
+        ".read": "auth != null"
+      }
+    },
+    "routes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
+
+
