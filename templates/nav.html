@@ -19,16 +19,13 @@
           <a class="nav-link {% if request.path == '/home' %}active{% endif %}" href="{{ url_for('home_page') }}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/track' %}active{% endif %}" href="{{ url_for('track') }}">Track</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="{{ url_for('about') }}">About</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.path == '/help' %}active{% endif %}" href="{{ url_for('help') }}">Help</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '' %}active{% endif %}" href="https://twitter.com/_FindMyBus_" target="_blank" >Twitter  <i class="bi bi-twitter"></i></a>
+          <a class="nav-link {% if request.path == '/twitter' %}active{% endif %}" href="{{ request.path }}">Twitter  <i class="bi bi-twitter"></i></a>
         </li>
       </ul>
       <hr>

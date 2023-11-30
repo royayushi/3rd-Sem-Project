@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block content %}
-    {% include "nav.html" %}
 
     
     <table class="table">
@@ -26,19 +25,87 @@
                     <td>{{ bus['destination'] }}</td>
                     <td>{{ bus['route'] }}</td>
                     <td>{{ bus['bus_fare'] }}</td>
-
-                    <!-- <td>
-                        <a href="#" class="delete-icon" data-bus-id="{{ bus_id }}">
-                        <i class="fa fa-trash"></i>
-                        </a>
-                    </td> -->
                 </tr>
             {% endfor %}
          </tbody>
     </table>
+    <hr>
+
+    <p class="h5 mb-4 mt-4 text-center">Select a Bus Number from the <mark>Dropdown</mark> to see its route on the map. </p>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 d-flex align-items-center justify-content-center">
+                <div id="dropdown">
+                    <select id="bus-id-selector" class="form-control">
+                        <p><option value="">Select a Bus Number</option>
+                        {% for bus_id, bus in buses.items() %}
+                          <option value="{{ bus_id }}">{{ bus['bus_no'] }}</option>
+                        {% endfor %}
+                      </select></p>
+            
+                      <button id="see-on-map-button" class="btn btn-success btn-sm" style="margin-left: 34px; border-radius: 7px;">See on Map</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="eta-container" class="text-center">
+        <p id="eta-text" style="font-weight: bold; font-size: large;">ETA: <span id="eta-value">Calculating...</span></p>
+    </div>
+
+    <div id="map-container" style="height: 450px; margin: 0 auto; width: 50%;">
+    
+    </div>
+
+    <!-- For multi bus_ids, search: Pailan-Howrah station -->
 
     <p class="text-center"><a   href="/" class="btn btn-dark btn-lg text-center space mt-4" type="submit"> Back </a>
     </p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var mapboxToken = "{{ mapbox_token }}";
+
+            const busIds = JSON.parse(JSON.parse('{{ bus_ids_json |tojson | replace("\\", "\\\\") | safe }}').replace(/\\/g, ""));
+
+            if (Array.isArray(busIds)) {
+                console.log('busIds is an array');
+                // Process bus IDs as an array
+            } else {
+                console.error('busIds is not an array');
+            }
+
+            // Fetch bus information from Flask route
+            var coordinateInfoJson = JSON.parse('{{coordinateInfo | tojson | replace("\\", "\\\\") | safe}}');
+            const coordinateInfoJsonType = typeof coordinateInfoJson;
+            console.log('coordinateInfoJson type:', coordinateInfoJsonType);
+            var coordinateInfo = JSON.parse(coordinateInfoJson);
+            const coordinateInfoType = typeof coordinateInfo;
+            console.log('coordinateInfo type:', coordinateInfoType);
+
+            // Initialize the map with the first bus ID by default
+            initializeMap(mapboxToken, busIds[0], coordinateInfo);
+
+            // Event listener for the "See on Map" button
+            document.getElementById("see-on-map-button").addEventListener("click", function () {
+                // Get the selected bus ID from the dropdown
+                var selectedBusId = document.getElementById("bus-id-selector").value;
+
+                // Check if a bus ID is selected
+                 if (selectedBusId) {
+                    // Call initializeMap for the selected bus_id
+                    initializeMap(mapboxToken, selectedBusId, coordinateInfo);
+                } else {
+                    // Handle the case where no bus ID is selected (optional)
+                    console.log("Please select a bus ID");
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"></script>
 {% endblock %}
 
 

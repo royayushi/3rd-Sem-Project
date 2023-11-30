@@ -27,6 +27,10 @@
     "routes": {
       ".read": "auth != null",
       ".write": "auth != null"
+    },
+    "areas": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     }
   }
 }

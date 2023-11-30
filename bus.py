@@ -3,11 +3,13 @@ import firebase_admin
 from firebase_admin import credentials, db
 from dotenv import load_dotenv
 import os
-import csv 
+import csv
+import json 
 
 load_dotenv()  # Loading environment variables from .env file
 
 app = Flask(__name__)
+# app.config['STATIC_FOLDER'] = 'static'
 
 flaskApp = os.getenv("FLASK_APP")
 flaskDebug = os.getenv("FLASK_DEBUG")
@@ -28,18 +30,38 @@ firebase_admin.initialize_app(cred, {
 @app.route('/insertdata')
 def insertdata():
     # Loading the CSV file
-    with open("C:\\Users\\HP\\Downloads\\BUS_ROUTES - Sheet1.csv") as csvfile:
+    with open("C:\\Users\\ayur5\\Downloads\\BUS_ROUTES(1) - Sheet1.csv") as csvfile:
         reader = csv.DictReader(csvfile)
+
         # Creating a reference to the 'buses' node in the database
         buses_ref = db.reference('buses')
-        # Skipping the first row/header
-        next(reader)
+
         # Looping through each row in the CSV file and insert the data into the database
         for row in reader:
             # Using the Bus ID as the key for the child node
             bus_id = row['bus_id']
             # Creating a reference to the child node using the bus ID
             bus_ref = buses_ref.child(bus_id)
+            # Creating a reference to the 'areas' node in the database
+            areas_ref = db.reference('areas')
+
+            # Adding the cleaning logic for the 'route' field
+            route = row['route']
+            cleaned_route = [value.replace('\n', '').replace('via:', '').replace('via', '').strip() for value in route.split(',')]
+
+            route_coordinates = {}
+
+            for point in cleaned_route:
+                area_data = areas_ref.child(point).get()
+                if area_data:
+                    route_coordinates[point] = {
+                        'latitude': area_data.get('latitude', ''),
+                        'longitude': area_data.get('longitude', '')
+                    }
+
+            cleaned_route = ','.join(cleaned_route)  # Join the cleaned values back into a string
+            
+        
             # Creating a dictionary to insert the child node
             bus_data = {
                 'bus_id': row['bus_id'],
@@ -50,8 +72,10 @@ def insertdata():
                 'origin_long': row['origin_longi'],
                 'dest_lat': row['dest_lati'],
                 'dest_long': row['dest_longi'],
-                'route' : row['route']
+                'route' : cleaned_route,
+                'route_coordinates': route_coordinates
             }
+
             # Setting the data for the child node
             bus_ref.set(bus_data)
         return 'Data inserted successfully!'
@@ -60,7 +84,7 @@ def insertdata():
 @app.route('/updatedata')
 def updatedata():
     # Loading the CSV file
-    with open("C:\\Users\\HP\\Downloads\\BUS_ROUTES - Sheet1.csv") as csvfile:
+    with open("C:\\Users\\ayur5\\Downloads\\BUS_ROUTES(1) - Sheet1.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         # Creating a reference to the 'buses' node in the database
         buses_ref = db.reference('buses')
@@ -111,12 +135,9 @@ def arrival():
             new_arrival_ref.set(True)
 
         return 'Arrivals added successfully!'
-#Creating an empty list to store the route values
-eachRoute = []
 
 @app.route('/creating_routes')
 def creating_routes():
-    global eachRoute
    #Creating a reference to the database
     buses_ref = db.reference('buses')
     routes_ref = db.reference('routes')
@@ -138,20 +159,17 @@ def creating_routes():
         origin = bus_data['origin']
         destination = bus_data['destination']
         route_key = f"{origin}-{destination}"
-        eachRoute.append(route_key)
         if route_key in routes_dict:
             routes_dict[route_key].append(bus_id)
         else:
             routes_dict[route_key] = [bus_id]
-
-    # uniqueRoutes = list(set(eachRoute))
 
     # Writing the routes to the routes node
     routes_ref.set(routes_dict)
     return "Routes added successfully!"
 
 @app.route('/creating_areas')
-def createArea1():
+def createAreas():
     # Creating a reference to the 'buses' node in the database
     buses_ref = db.reference('buses')
 
@@ -174,15 +192,38 @@ def createArea1():
         points_covered.extend(locations)
 
     data = points_covered
-    cleaned_data = [value.replace('\n', '').replace('via:', '').replace('via', '').strip() for value in data]
-    values_to_remove = ["8B","Sishu Mangal"]
-    for value in values_to_remove:
-        cleaned_data.remove(value)
 
     # Filtering out the unique values from points_covered
-    unique_points_covered = list(set(cleaned_data))
+    unique_points_covered = list(set(data))
 
     return unique_points_covered
+
+@app.route('/insertAreas')
+def insertAreas():
+    # Loading the CSV file
+    with open("C:\\Users\\ayur5\\Downloads\\AREAS - Sheet2.csv") as csvfile:
+        reader = csv.DictReader(csvfile)
+
+        # Creating a reference to the 'areas' node in the database
+        areas_ref = db.reference('areas')
+
+        # Looping through each row in the CSV file and insert the data into the database
+        for row in reader:
+            # Using the Bus ID as the key for the child node
+            area_key = row['ALL POINTS']
+            # Creating a reference to the child node using the bus ID
+            areaChild_ref = areas_ref.child(area_key)
+            
+        
+            # Creating a dictionary to insert the child node
+            area_data = {
+                'points': row['ALL POINTS'],
+                'latitude': row['LATITUDE'],
+                'longitude': row['LONGITUDE'],
+            }
+            # Setting the data for the child node
+            areaChild_ref.set(area_data)
+        return 'Areas inserted successfully!'
 
 @app.route('/getArrivalData')
 def getArrivalData():
@@ -203,10 +244,9 @@ def getBusData():
 @app.route("/")
 @app.route("/home")
 def home_page():
-    global eachRoute
-    '''
-    I was thinking of adding the eachRoute.append(route_key) line to the creating_routes function, after the f"{}" line and before the for loop. We will make eachRoute there a global variable and thus will be able to use it in this function also. We'll add the uniqueRoutes variable there only and make that also a global variable. That way we won't have code redundancy.
-    '''
+
+    routes_ref = db.reference('routes')
+    eachRoute = routes_ref.get()
     uniqueRoutes = list(set(eachRoute))
     # print(uniqueRoutes)
     return render_template('home.html', eachRoute = uniqueRoutes)
@@ -223,12 +263,13 @@ def search():
     # Redirecting to the search results page
     return redirect(search_url)
 
-
 # Route for the search results page
 @app.route('/search_results')
 def search_results():
     # Retrieving the route values from the URL parameters
     selectedRoute = request.args.get('selectedRoute')
+
+    mapbox_token = os.getenv('MAPBOX_ACCESS_TOKEN')
 
     # Querying the database for buses that match the route
     routes_ref = db.reference('routes')
@@ -236,22 +277,52 @@ def search_results():
 
     # If the route doesn't exist, returning an error message
     if route_data is None:
-        return f"No buses found for route {selectedRoute}"
+        return f"No buses found for route {selectedRoute}"  
 
     # Retrieving the data for each bus in the route
     buses_ref = db.reference('buses')
     buses_data = {}
+    coordinateInfo = {}
+    # Create an empty list to store bus_ids
+    bus_ids = []
     for bus_id in route_data:
         bus_data = buses_ref.child(bus_id).get()
         if bus_data is not None:
-            buses_data[bus_id] = {'bus_no': bus_data['bus_no'], 'origin': bus_data['origin'], 'destination': bus_data['destination'], 'route': bus_data['route'], 'bus_fare': bus_data['bus_fare']}
+            bus_ids.append(bus_id)
+
+            origin_name = bus_data['origin']
+            dest_name = bus_data['destination']
+            origin_lat = bus_data['origin_lat']
+            origin_long = bus_data['origin_long']
+            dest_lat = bus_data['dest_lat']
+            dest_long = bus_data['dest_long']
+            route_coordinates = bus_data['route_coordinates']
+
+            coordinateInfo[bus_id] = {
+            'origin': {'name': origin_name, 'lat': origin_lat, 'long': origin_long},
+            'destination': {'name': dest_name, 'lat': dest_lat, 'long': dest_long},
+            'route_coordinates': route_coordinates
+            }
+
+            print(coordinateInfo)
+
+            coordinateInfo_json = json.dumps(coordinateInfo, indent=2)
+            # print(coordinateInfo_json)
+
+            bus_ids_json = json.dumps(bus_ids, indent = 2 )
+            # print(bus_ids_json)
+
+            buses_data[bus_id] = {'bus_id': bus_data['bus_id'], 'bus_no': bus_data['bus_no'], 'origin': origin_name, 'destination': dest_name, 'route': bus_data['route'], 'bus_fare': bus_data['bus_fare']}
 
     # If no buses were found for the route, return an error message
     if len(buses_data) == 0:
         return f"No buses found for route {selectedRoute}"
 
-    # Return the list of buses that match the route
-    return render_template('search_results.html', buses=buses_data)
+    # Return the dict of buses that match the route
+    return render_template(
+        'search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json, mapbox_token=mapbox_token,
+        bus_ids_json=bus_ids_json, bus_ids=bus_ids)
+
 
 @app.route("/about")
 def about():
@@ -260,18 +331,6 @@ def about():
 @app.route("/help")
 def help():
   return render_template('help.html')
-
-@app.route("/track")
-def track():
-  return render_template('track.html')
-
-@app.route("/mylocation")
-def mylocation():
-  return render_template('mylocation.html')
-
-@app.route("/pointlocation")
-def pointlocation():
-  return render_template('pointlocation.html')
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', debug = True)
