@@ -4,7 +4,8 @@ from firebase_admin import credentials, db
 from dotenv import load_dotenv
 import os
 import csv
-import json 
+import json
+from flask_cors import CORS 
 
 load_dotenv()  # Loading environment variables from .env file
 
@@ -13,6 +14,7 @@ load_dotenv()  # Loading environment variables from .env file
 cred = credentials.Certificate('serviceAccountKey.json')
 
 app = Flask(__name__)
+CORS(app)
 # app.config['STATIC_FOLDER'] = 'static'
 
 flaskApp = os.getenv("FLASK_APP")
