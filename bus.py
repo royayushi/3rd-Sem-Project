@@ -14,7 +14,7 @@ load_dotenv()  # Loading environment variables from .env file
 cred = credentials.Certificate('serviceAccountKey.json')
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://findmybus-azlf.onrender.com"}})
 # app.config['STATIC_FOLDER'] = 'static'
 
 flaskApp = os.getenv("FLASK_APP")
