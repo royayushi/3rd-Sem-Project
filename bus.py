@@ -9,8 +9,8 @@ import json
 load_dotenv()  # Loading environment variables from .env file
 
 # Fetching the service account key JSON file contents
-service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_CREDENTIALS')
-cred = credentials.Certificate(service_account_json)
+# service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_CREDENTIALS')
+cred = credentials.Certificate('serviceAccountKey.json')
 
 app = Flask(__name__)
 # app.config['STATIC_FOLDER'] = 'static'
