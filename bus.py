@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 import csv
 import json
-from flask_cors import CORS 
+# from flask_cors import CORS 
 
 load_dotenv()  # Loading environment variables from .env file
 
@@ -14,7 +14,7 @@ load_dotenv()  # Loading environment variables from .env file
 cred = credentials.Certificate('serviceAccountKey.json')
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://findmybus-azlf.onrender.com"}})
+# CORS(app, resources={r"/api/*": {"origins": "https://findmybus-azlf.onrender.com"}})
 # app.config['STATIC_FOLDER'] = 'static'
 
 flaskApp = os.getenv("FLASK_APP")
