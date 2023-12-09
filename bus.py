@@ -8,15 +8,29 @@ import json
 
 load_dotenv()  # Loading environment variables from .env file
 
+# Fetching the service account key JSON file contents
+service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_CREDENTIALS')
+# cred = credentials.Certificate(service_account_json)
+
+cred = None
+if service_account_json:
+    cred = credentials.Certificate(service_account_json)
+else:
+    # Reading the service account key from the file
+    with open('serviceAccountName.json', 'r') as f:
+        service_account_key = f.read()
+
+    # Setting a temporary environment variable
+    os.environ['FIREBASE_SERVICE_ACCOUNT_CREDENTIALS'] = service_account_key
+
+    # Creating credentials object
+    cred = credentials.Certificate(service_account_key)
+
 app = Flask(__name__)
 # app.config['STATIC_FOLDER'] = 'static'
 
 flaskApp = os.getenv("FLASK_APP")
 flaskDebug = os.getenv("FLASK_DEBUG")
-
-# Fetching the service account key JSON file contents
-service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_CREDENTIALS')
-cred = credentials.Certificate(service_account_json)
 
 
 # Initializing the app with a custom auth variable, limiting the server's access
@@ -335,4 +349,7 @@ def help():
   return render_template('help.html')
 
 if __name__ == "__main__":
+  # Remove the temporary environment variable
+  if not service_account_json:
+    del os.environ['FIREBASE_SERVICE_ACCOUNT_CREDENTIALS']
   app.run(host='0.0.0.0', debug = True)
