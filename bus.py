@@ -4,7 +4,7 @@ from firebase_admin import credentials, db
 from dotenv import load_dotenv
 import os
 import csv
-import json
+import json, requests
 from flask_cors import CORS 
 
 load_dotenv()  # Loading environment variables from .env file
@@ -345,7 +345,19 @@ def search_results():
 
     return cors_response
 
+# Add a new endpoint to proxy Mapbox API requests
+@app.route('/get_eta', methods=['GET'])
+def get_eta():
+    origin = request.args.get('origin')
+    destination = request.args.get('destination')
+    mapbox_token = os.getenv('MAPBOX_ACCESS_TOKEN')
 
+    # Make the Mapbox API request
+    mapbox_url = f'https://api.mapbox.com/directions/v5/mapbox/driving/{origin};{destination}?access_token={mapbox_token}'
+    response = requests.get(mapbox_url)
+
+    # Return the Mapbox API response to the client
+    return jsonify(response.json())
 
 @app.route("/about")
 def about():

@@ -60,15 +60,12 @@ function initializeMap(mapboxToken, busId, coordinateInfo) {
       });
     });
 
+
     // Get ETA using Mapbox Directions API
     const origin = `${coordinateInfo[busId].origin.long},${coordinateInfo[busId].origin.lat}`;
     const destination = `${coordinateInfo[busId].destination.long},${coordinateInfo[busId].destination.lat}`;
 
-    fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${origin};${destination}?access_token=${mapboxToken}`, {
-      headers: {
-        'Access-Control-Allow-Origin': 'https://findmybus-azlf.onrender.com'
-      }
-    })
+    fetch(`/get_eta?origin=${origin}&destination=${destination}`)
       .then(response => response.json())
       .then(data => {
         const etaInSeconds = data.routes[0].duration;
