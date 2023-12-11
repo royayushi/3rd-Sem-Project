@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 import firebase_admin 
 from firebase_admin import credentials, db
 from dotenv import load_dotenv
@@ -330,6 +330,8 @@ def search_results():
     return render_template(
         'search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json, mapbox_token=mapbox_token,
         bus_ids_json=bus_ids_json, bus_ids=bus_ids)
+
+    response.headers.add("Access-Control-Allow-Origin", "https://findmybus-azlf.onrender.com")
 
 
 @app.route("/about")
