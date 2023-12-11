@@ -64,7 +64,11 @@ function initializeMap(mapboxToken, busId, coordinateInfo) {
     const origin = `${coordinateInfo[busId].origin.long},${coordinateInfo[busId].origin.lat}`;
     const destination = `${coordinateInfo[busId].destination.long},${coordinateInfo[busId].destination.lat}`;
 
-    fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${origin};${destination}?access_token=${mapboxToken}`)
+    fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${origin};${destination}?access_token=${mapboxToken}`, {
+      headers: {
+        'Access-Control-Allow-Origin': 'https://findmybus-azlf.onrender.com'
+      }
+    })
       .then(response => response.json())
       .then(data => {
         const etaInSeconds = data.routes[0].duration;
