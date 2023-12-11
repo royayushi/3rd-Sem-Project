@@ -338,9 +338,10 @@ def search_results():
 
     # Set CORS headers
     cors_response = make_response(template_response)
-    cors_response.headers.add("Access-Control-Allow-Origin", "https://findmybus-azlf.onrender.com")
-    cors_response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    cors_response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    cors_response.headers['Access-Control-Allow-Origin'] = 'https://findmybus-azlf.onrender.com'
+    cors_response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
+    cors_response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, UPDATE'
+    cors_response.headers['Access-Control-Allow-Credentials'] = 'true'
 
     return cors_response
 
