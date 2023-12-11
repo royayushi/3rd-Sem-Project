@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect, jsonify
+from flask import Flask, render_template, request, url_for, redirect, jsonify, make_response
 import firebase_admin 
 from firebase_admin import credentials, db
 from dotenv import load_dotenv
@@ -324,14 +324,26 @@ def search_results():
 
     # If no buses were found for the route, return an error message
     if len(buses_data) == 0:
-        return f"No buses found for route {selectedRoute}"
+        error_response = jsonify({"error": f"No buses found for route {selectedRoute}"})
+        return make_response(error_response, 404)
 
     # Return the dict of buses that match the route
-    return render_template(
-        'search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json, mapbox_token=mapbox_token,
-        bus_ids_json=bus_ids_json, bus_ids=bus_ids)
 
-    response.headers.add("Access-Control-Allow-Origin", "https://findmybus-azlf.onrender.com")
+    template_response = render_template('search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json,
+                               mapbox_token=mapbox_token, bus_ids_json=bus_ids_json, bus_ids=bus_ids)
+    
+    # return render_template(
+    #     'search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json, mapbox_token=mapbox_token,
+    #     bus_ids_json=bus_ids_json, bus_ids=bus_ids)
+
+    # Set CORS headers
+    cors_response = make_response(template_response)
+    cors_response.headers.add("Access-Control-Allow-Origin", "https://findmybus-azlf.onrender.com")
+    cors_response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    cors_response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
+    return cors_response
+
 
 
 @app.route("/about")
