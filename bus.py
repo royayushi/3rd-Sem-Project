@@ -272,7 +272,7 @@ def search():
     return redirect(search_url)
 
 # Route for the search results page
-@app.route('/search_results')
+@app.route('/search_results', methods=['OPTIONS', 'GET'])
 def search_results():
     # Retrieving the route values from the URL parameters
     selectedRoute = request.args.get('selectedRoute')
