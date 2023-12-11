@@ -356,8 +356,11 @@ def get_eta():
     mapbox_url = f'https://api.mapbox.com/directions/v5/mapbox/driving/{origin};{destination}?access_token={mapbox_token}'
     response = requests.get(mapbox_url)
 
-    # Return the Mapbox API response to the client
-    return jsonify(response.json())
+    if response.status_code == 200:
+        data = response.json()
+        return jsonify(data)
+    else:
+        return jsonify({'error': 'Error fetching ETA from Mapbox'}), 500
 
 @app.route("/about")
 def about():
