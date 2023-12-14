@@ -17,9 +17,9 @@ app = Flask(__name__)
 CORS(app, resources={r"/search_results": {"origins": "https://findmybus-azlf.onrender.com"}})
 # app.config['STATIC_FOLDER'] = 'static'
 
-@app.before_request
-def log_cors_headers():
-    print(request.headers)
+# @app.before_request
+# def log_cors_headers():
+#     print(request.headers)
 
 flaskApp = os.getenv("FLASK_APP")
 flaskDebug = os.getenv("FLASK_DEBUG")
@@ -255,9 +255,11 @@ def home_page():
 
     routes_ref = db.reference('routes')
     eachRoute = routes_ref.get()
-    uniqueRoutes = list(set(eachRoute))
-    # print(uniqueRoutes)
-    return render_template('home.html', eachRoute = uniqueRoutes)
+    # print(type(eachRoute))
+    # print(eachRoute)
+    eachRoute = list(eachRoute)
+    # print(eachRoute)
+    return render_template('home.html', eachRoute = eachRoute)
 
 # Route for the search page
 @app.route('/search', methods=['POST'])
