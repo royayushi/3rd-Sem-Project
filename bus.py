@@ -217,9 +217,9 @@ def insertAreas():
 
         # Looping through each row in the CSV file and insert the data into the database
         for row in reader:
-            # Using the Bus ID as the key for the child node
+            # Using the 'all points' column as the key for the child node
             area_key = row['ALL POINTS']
-            # Creating a reference to the child node using the bus ID
+            # Creating a reference to the child node using the area ID
             areaChild_ref = areas_ref.child(area_key)
             
         
@@ -293,7 +293,7 @@ def search_results():
     buses_ref = db.reference('buses')
     buses_data = {}
     coordinateInfo = {}
-    # Create an empty list to store bus_ids
+    # Creating an empty list to store bus_ids
     bus_ids = []
     for bus_id in route_data:
         bus_data = buses_ref.child(bus_id).get()
@@ -324,12 +324,12 @@ def search_results():
 
             buses_data[bus_id] = {'bus_id': bus_data['bus_id'], 'bus_no': bus_data['bus_no'], 'origin': origin_name, 'destination': dest_name, 'route': bus_data['route'], 'bus_fare': bus_data['bus_fare']}
 
-    # If no buses were found for the route, return an error message
+    # If no buses were found for the route, then returning an error message
     if len(buses_data) == 0:
         error_response = jsonify({"error": f"No buses found for route {selectedRoute}"})
         return make_response(error_response, 404)
 
-    # Return the dict of buses that match the route
+    # Returning the dict of buses that match the route
 
     template_response = render_template('search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json,
                                mapbox_token=mapbox_token, bus_ids_json=bus_ids_json, bus_ids=bus_ids)
@@ -338,7 +338,7 @@ def search_results():
     #     'search_results.html', buses=buses_data, coordinateInfo=coordinateInfo_json, mapbox_token=mapbox_token,
     #     bus_ids_json=bus_ids_json, bus_ids=bus_ids)
 
-    # Set CORS headers
+    # Setting CORS headers
     cors_response = make_response(template_response)
     cors_response.headers['Access-Control-Allow-Origin'] = 'https://findmybus-azlf.onrender.com'
     cors_response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
@@ -347,14 +347,14 @@ def search_results():
 
     return cors_response
 
-# Add a new endpoint to proxy Mapbox API requests
+# Adding a new endpoint to proxy Mapbox API requests
 @app.route('/get_eta', methods=['GET'])
 def get_eta():
     origin = request.args.get('origin')
     destination = request.args.get('destination')
     mapbox_token = os.getenv('MAPBOX_ACCESS_TOKEN')
 
-    # Make the Mapbox API request
+    # Making the Mapbox API request
     mapbox_url = f'https://api.mapbox.com/directions/v5/mapbox/driving/{origin};{destination}?access_token={mapbox_token}'
     response = requests.get(mapbox_url)
 

@@ -33,7 +33,7 @@ function initializeMap(mapboxToken, busId, coordinateInfo) {
 
       });
   
-      // Draw route line (blue)
+      // Draw route line (blue) ['...' part dynamically includes the coordinates of each route point in the LineString. It uses the spread operator (...) to concatenate an array of route point coordinates into the overall coordinates array.]
       map.addSource('route', {
         type: 'geojson',
         data: {
