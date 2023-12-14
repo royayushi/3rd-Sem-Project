@@ -29,4 +29,24 @@ Find My Bus is a web application that allows users to find buses with estimated 
 8. The markers are connected by a route line, in blue.
 9. In case there are more than one bus for a particular route, you can select a bus number that you want to see in the map from the dropdown on the results page, and click the "See on Map" button.
 
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/03e57b41-26ec-4d74-ba8d-98e8d78cb147)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/993ce89d-0ef5-4bea-a705-ef28eda5927f)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/867e3ce9-e5b3-4559-88fb-0c21fca05315)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/9d6fec88-4381-44bb-96e9-f2d5be339513)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/3711a25b-8b31-435b-91a8-e1d2673cb0cb)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/d55fd8b1-8d51-4f40-8022-c9caea2db8e9)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/47dc5b26-0118-4a9d-9b20-f28b6d053811)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/4f5c6c69-b9b2-4d0f-a07d-d89e7e6ee966)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/3d647dc0-65cb-48e2-b73e-78abf4dd2322)
+![image](https://github.com/royayushi/FindMyBus/assets/109765650/51060eb8-47ad-4ab1-a85f-a594b3befd69)
+
+
+
+
+
+
+
+
+
+
 Happy Searching!
